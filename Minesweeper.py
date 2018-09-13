@@ -48,6 +48,11 @@ class Minesweeper:
                         if j+1 != self.n:  # if NOT Top Left Corner
                             self.increms(i-1,j+1)
                             self.increms(i,j+1)
+                    else:
+                        if j-1 != -1:
+                            self.increms(i,j-1)
+                        if j+1 != self.n:
+                            self.increms(i,j+1)
                     if i+1 != self.n :
                         self.increms(i+1,j)
                         if j-1 != -1: # if NOT Bottom Right Corner
@@ -64,90 +69,126 @@ class Minesweeper:
                    else:
                        print(" < "+str(int(self.show[i,j]))+" > \t",end='')
                print()
+    def copyLeft(self,i,j):
+        if j>=0:
+            if self.show[i,j] == -1:
+                self.show[i,j] = self.hide[i,j]
+                if self.hide[i,j] == 0:
+                    self.copyLeft(i,j-1)
+                    self.copyUp(i-1,j)
+                    self.copyDown(i+1,j)
+    def copyRight(self,i,j):
+        if j<self.n:
+            if self.show[i,j] == -1:
+                self.show[i,j] = self.hide[i,j]
+                if self.hide[i,j] == 0:
+                    self.copyRight(i,j+1)
+                    self.copyUp(i-1,j)
+                    self.copyDown(i+1,j)
+    def copyUp(self,i,j):
+        if i>=0:
+            if self.show[i,j] == -1:
+                self.show[i,j] = self.hide[i,j]
+                if self.hide[i,j] == 0:
+                    self.copyUp(i-1,j)
+                    self.copyLeft(i,j-1)
+                    self.copyRight(i,j+1)
+    def copyDown(self,i,j):
+        if i<self.n:
+            if self.show[i,j] == -1:
+                self.show[i,j] = self.hide[i,j]
+                if self.hide[i,j] == 0:
+                    self.copyDown(i+1,j)
+                    self.copyLeft(i,j-1)
+                    self.copyRight(i,j+1)
+    def changeNeighbour(self,i,j):
+        self.copyUp(i-1,j)
+        self.copyDown(i+1,j)
+        self.copyRight(i,j+1)
+        self.copyLeft(i,j-1)            
     def playChance(self):
         try:
             i = int(input("Enter the row ( 0 - "+str(self.n)+" ) : "))
+            if i<0 or i>=self.n:
+                    raise NameError("Out of Bounds")
         except ValueError:
             print("Wrong Value Entered ")
             try:
-                i = int(input("Enter the row ( 0 - "+str(self.n)+" ) : "))
+                i = int(input("Enter the row ( 0 - "+str(self.n-1)+" ) : "))
                 if i<0 or i>=self.n:
                     raise NameError("Out of Bounds")
             except ValueError:
                 print("Wrong Value Entered ")
                 print("Exiting Program")
-            except NameError:
                 sys.exit()
+            except NameError:
+                print("Wrong Value Entered ")
+                print("Exiting Program")
+                sys.exit()
+        except NameError:
+            print("Enter Value Between 0 - "+str(self.n-1))
+            try:
+                i = int(input("Enter the row ( 0 - "+str(self.n-1)+" ) : "))
+                if i<0 or i>=self.n:
+                    raise NameError("Out of Bounds")
+            except ValueError:
+                print("Wrong Value Entered ")
+                print("Exiting Program")
+                sys.exit()
+            except NameError:
+                print("Wrong Value Entered ")
+                print("Exiting Program")
+                sys.exit()                
         try:
-            j = int(input("Enter the column ( 0 - "+str(self.n)+" ) : "))
+            j = int(input("Enter the column ( 0 - "+str(self.n-1)+" ) : "))
+            if j<0 or j>=self.n:
+                    raise NameError("Out of Bounds")
         except ValueError:
             print("Wrong Value Entered ")
             try:
-                j = int(input("Enter the column ( 0 - "+str(self.n)+" ) : "))
+                j = int(input("Enter the column ( 0 - "+str(self.n-1)+" ) : "))
                 if j<0 or j>=self.n:
                     raise NameError("Out of Bounds")
             except ValueError:
                 print("Wrong Value Entered ")
                 print("Exiting Program")
+                sys.exit()
             except NameError:
+                print("Wrong Value Entered ")
+                print("Exiting Program")
+                sys.exit()
+        except NameError:
+            print("Enter Value Between 0 - "+str(self.n-1))
+            try:
+                j = int(input("Enter the column ( 0 - "+str(self.n-1)+" ) : "))
+                if j<0 or j>=self.n:
+                    raise NameError("Out of Bounds")
+            except ValueError:
+                print("Wrong Value Entered ")
+                print("Exiting Program")
+                sys.exit()
+            except NameError:
+                print("Wrong Value Entered ")
+                print("Exiting Program")
                 sys.exit()
         if self.show[i,j] != -1:
             print("Already Open")
+            self.playChance()
+        else:
             if self.checkWin() == True:
                 print("Congrats you have Completed...")
                 self.showMines()
             else:
-                self.playChance()
-        else:
-            if self.hide[i,j] != -1:
-                mink = self.n
-                maxk = 0
-                for s in range(i,self.n):
-                    if self.hide[s,j] != 0:
-                        break;
-                    for k in range(j,self.n):
-                        if self.hide[s,k] == 0 and mink > k:
-                            self.show[s,k] = self.hide[s,k]
-                        else:
-                            if mink > k:
-                                mink = k
-                            break
-                    for k in range(0,j):
-                        g = j-k
-                        if self.hide[s,g] == 0 and maxk < g:
-                            self.show[s,g] = self.hide[s,g]
-                        else:
-                            if maxk < g:
-                                maxk = g
-                            break
-                mink = self.n
-                maxk = 0
-                for s in range(0,i):
-                    h = i-s
-                    if self.hide[h,j]!=0:
-                        break;
-                    for k in range(j,self.n):
-                        if self.hide[h,k] == 0 and mink > k:
-                            self.show[h,k] = self.hide[h,k]
-                        else:
-                            if mink > k:
-                                mink = k
-                            break
-                    for k in range(0,j):
-                        g = j-k
-                        if self.hide[h,g] == 0 and maxk < g:
-                            self.show[h,g] = self.hide[h,g]
-                        else:
-                            if maxk < g:
-                                maxk = g
-                            break                        
-                self.show[i,j]=(self.hide[i,j])
-                sleep(1)
-                clear()
-                self.showArea()
-                self.showMines()
-                self.playChance()
-            else:
-                self.showMines()
-                print("Game Over")
-a = Minesweeper(10,10)
+                if self.hide[i,j] != -1:
+                    if self.hide[i,j] == 0 :
+                        self.changeNeighbour(i,j)
+                    self.show[i,j]=self.hide[i,j]
+                    sleep(1)
+                    clear()
+                    self.showArea()
+                    self.showMines()
+                    self.playChance()
+                else:
+                    self.showMines()
+                    print("Game Over")
+a = Minesweeper(10,25)
